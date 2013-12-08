@@ -1,7 +1,7 @@
 subdl-perl
 ==========
 
-A Perl script for downloading subtitles. It will get *all* **english** subtitles for a single TV show episode or a movie from
+A Perl script for downloading subtitles on the command-line. It will get *all* **english** subtitles for a single TV show episode or a movie from
 [OpenSubtitles](www.opensubtitles.org).
 
 Let me know if you want other features (multiple episodes, multiple movies...).
