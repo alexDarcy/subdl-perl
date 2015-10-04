@@ -11,6 +11,8 @@ Let me know if you want other features (multiple episodes, multiple movies...).
     perl subdl-perl YourMovie.mkv
     
 This will get all available subtitles in the current folder (unless the file already exists).
+The first result is assumed to be the best so it will be renamed accordingly.
+The other results will be named with an additional number (MyMovie(1).srt, MyMovie(2).srt and so on).
 
 ## Requirements
 

@@ -1,12 +1,22 @@
+#!/usr/bin/perl
 # Download subtitles for a given movie/episode using Opensubtitles API
-
 package SubDL;
 use XML::RPC;
 use strict;
 use warnings;
 use MIME::Base64;
+use File::Basename;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 
+
+# Set exact subtitle name
+sub subtitle_name {
+  my ( $movie ) = @_;
+  my @exts = qw(.mp4 .mkv .avi);
+  # Define subtitle
+  my ($name, $dir, $suffix) = fileparse($movie, @exts);
+  return "${name}.srt";
+}
 
 sub new
 {
@@ -15,6 +25,8 @@ sub new
         _movie => shift,
     };
     bless $self, $class;
+    $self->{_sub} = subtitle_name($self->{_movie});
+
     # Login
     $self->{_server} = XML::RPC->new('http://api.opensubtitles.org/xml-rpc');
     my $result = $self->{_server}->call( 'LogIn', '', '', 'en', 'SubDL v1');
@@ -73,16 +85,35 @@ sub download_subtitles {
   $self->check_status($result);
 
   # Decode and extract
+  my $i = 0;
+  my @all_subs = @{$self->{_names}};
   foreach(@{$result->{'data'}}) {
     my $tmp = decode_base64($_->{'data'});
-    my $output = shift $self->{_names};
+    my $output = $all_subs[$i];
+    $output = $self->rename_file($i);
     if (-e $output) { 
       print "File exists, skipping : $output \n";
       next;
     }
     my $z = gunzip(\$tmp, $output) or die "Failed to extract $GunzipError";
+
+    $i++;
   }
 }
+
+sub rename_file {
+  my ($self, $i) = @_;
+  if ($i == 0) {
+    print "Assuming first match is the best\n";
+    return $self->{_sub};
+  }
+  else {
+    my $sub2 = $self->{_sub};
+    $sub2 =~ s/\.srt/($i)\.srt/;
+    return $sub2;
+  }
+}
+
 
 #-------------------------------------------------------------------------------
 # The following is taken from 
