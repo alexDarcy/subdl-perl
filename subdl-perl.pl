@@ -60,7 +60,9 @@ sub search_subtitles {
         moviebytesize=> $size 
       } ]);
   $self->check_status($result);
-  print "Found ", scalar(@{$result->{'data'}}), " matches \n";
+  my $nb = scalar(@{$result->{'data'}});
+  print "Found ", $nb, " matches \n";
+  if ($nb <= 0) {exit;}
 
 # Extract the list
   my (@subs, @names);
